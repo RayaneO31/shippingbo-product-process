@@ -663,7 +663,27 @@
     transition: width 0.1s linear;
   }
 
+  /* ─── DIAGRAM ─── */
+  .diagram-section { padding: 0 56px 28px; }
+  .diagram-section > h2 {
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text-faint); margin-bottom: 16px;
+  }
+  .diagram-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 24px 32px;
+    box-shadow: var(--shadow-sm);
+  }
+  .diagram-wrap svg { width: 100%; height: auto; display: block; max-width: 720px; margin: 0 auto; }
+
   /* ─── RESPONSIVE ─── */
+  @media (max-width: 960px) {
+    .diagram-section { padding-left: 20px; padding-right: 20px; }
+  }
+
   @media (max-width: 960px) {
     :root { --nav-w: 0px; }
     .nav { display: none; }
@@ -789,6 +809,86 @@
     <div class="legend-item"><div class="legend-dot" style="background:var(--phase-4)"></div> Design & Cadrage</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--phase-5)"></div> Delivery</div>
     <div class="legend-item"><div class="legend-dot" style="background:var(--phase-6)"></div> Post-Livraison</div>
+  </div>
+
+  <!-- DIAGRAM -->
+  <div class="diagram-section">
+    <h2>Vue d'ensemble — Cycle produit</h2>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 800 490" xmlns="http://www.w3.org/2000/svg" aria-label="Schéma circulaire du cycle produit SBO en 6 phases">
+        <defs>
+          <marker id="ar1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><polygon points="0,0 10,5 0,10" fill="#D4900A"/></marker>
+          <marker id="ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><polygon points="0,0 10,5 0,10" fill="#2E9B65"/></marker>
+          <marker id="ar3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><polygon points="0,0 10,5 0,10" fill="#C94040"/></marker>
+          <marker id="ar4" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><polygon points="0,0 10,5 0,10" fill="#6941B8"/></marker>
+          <marker id="ar5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><polygon points="0,0 10,5 0,10" fill="#1A88C4"/></marker>
+          <marker id="ar6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><polygon points="0,0 10,5 0,10" fill="#C46020"/></marker>
+        </defs>
+
+        <!-- Orbit ring (dashed) -->
+        <circle cx="400" cy="240" r="155" fill="none" stroke="#E2DED4" stroke-width="1" stroke-dasharray="4 4"/>
+
+        <!-- Colored arcs with directional arrows (clockwise) -->
+        <!-- P1→P2: from -75° to -45° -->
+        <path d="M 440.1 90.3 A 155 155 0 0 1 509.6 130.4" fill="none" stroke="#D4900A" stroke-width="2" marker-end="url(#ar1)"/>
+        <!-- P2→P3: from -15° to +15° -->
+        <path d="M 549.7 199.9 A 155 155 0 0 1 549.7 280.1" fill="none" stroke="#2E9B65" stroke-width="2" marker-end="url(#ar2)"/>
+        <!-- P3→P4: from +45° to +75° -->
+        <path d="M 509.6 349.6 A 155 155 0 0 1 440.1 389.7" fill="none" stroke="#C94040" stroke-width="2" marker-end="url(#ar3)"/>
+        <!-- P4→P5: from +105° to +135° -->
+        <path d="M 359.9 389.7 A 155 155 0 0 1 290.4 349.6" fill="none" stroke="#6941B8" stroke-width="2" marker-end="url(#ar4)"/>
+        <!-- P5→P6: from +165° to +195° -->
+        <path d="M 250.3 280.1 A 155 155 0 0 1 250.3 199.9" fill="none" stroke="#1A88C4" stroke-width="2" marker-end="url(#ar5)"/>
+        <!-- P6→P1: from +225° to +255° -->
+        <path d="M 290.4 130.4 A 155 155 0 0 1 359.9 90.3" fill="none" stroke="#C46020" stroke-width="2" marker-end="url(#ar6)"/>
+
+        <!-- Center bubble -->
+        <circle cx="400" cy="240" r="58" fill="#F7F6F2" stroke="#E2DED4" stroke-width="1.5"/>
+        <text x="400" y="234" text-anchor="middle" font-family="Syne,sans-serif" font-size="9" font-weight="700" fill="#B0AA9E" letter-spacing="2">CYCLE</text>
+        <text x="400" y="248" text-anchor="middle" font-family="Syne,sans-serif" font-size="9" font-weight="700" fill="#B0AA9E" letter-spacing="2">CONTINU</text>
+        <text x="400" y="266" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="18" fill="#C8C3B9">∞</text>
+
+        <!-- ── Phase 1 — Identification (top, amber) ── -->
+        <circle cx="400" cy="85" r="38" fill="#FDF3DC" stroke="#D4900A" stroke-width="2.5"/>
+        <text x="400" y="92" text-anchor="middle" font-family="Syne,sans-serif" font-size="20" font-weight="800" fill="#D4900A">01</text>
+        <text x="400" y="20" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8.5" font-weight="700" fill="#D4900A" letter-spacing="1.5">EXPLORATION</text>
+        <text x="400" y="34" text-anchor="middle" font-family="Syne,sans-serif" font-size="12" font-weight="700" fill="#1A1916">Identification</text>
+
+        <!-- ── Phase 2 — Qualification (upper right, green) ── -->
+        <circle cx="534" cy="162" r="38" fill="#E4F5EE" stroke="#2E9B65" stroke-width="2.5"/>
+        <text x="534" y="169" text-anchor="middle" font-family="Syne,sans-serif" font-size="20" font-weight="800" fill="#2E9B65">02</text>
+        <text x="584" y="148" text-anchor="start" font-family="DM Sans,sans-serif" font-size="8.5" font-weight="700" fill="#2E9B65" letter-spacing="1.5">QUALIFICATION</text>
+        <text x="584" y="162" text-anchor="start" font-family="Syne,sans-serif" font-size="12" font-weight="700" fill="#1A1916">Qualification</text>
+        <text x="584" y="176" text-anchor="start" font-family="DM Sans,sans-serif" font-size="10" fill="#7A7669">de l'opportunité</text>
+
+        <!-- ── Phase 3 — Hypothèses (lower right, red) ── -->
+        <circle cx="534" cy="318" r="38" fill="#FDEAEA" stroke="#C94040" stroke-width="2.5"/>
+        <text x="534" y="325" text-anchor="middle" font-family="Syne,sans-serif" font-size="20" font-weight="800" fill="#C94040">03</text>
+        <text x="584" y="304" text-anchor="start" font-family="DM Sans,sans-serif" font-size="8.5" font-weight="700" fill="#C94040" letter-spacing="1.5">RECHERCHE</text>
+        <text x="584" y="318" text-anchor="start" font-family="Syne,sans-serif" font-size="12" font-weight="700" fill="#1A1916">Hypothèses</text>
+        <text x="584" y="332" text-anchor="start" font-family="DM Sans,sans-serif" font-size="10" fill="#7A7669">&amp; Vérifications</text>
+
+        <!-- ── Phase 4 — Convergence (bottom, purple) ── -->
+        <circle cx="400" cy="395" r="38" fill="#F0EAFB" stroke="#6941B8" stroke-width="2.5"/>
+        <text x="400" y="402" text-anchor="middle" font-family="Syne,sans-serif" font-size="20" font-weight="800" fill="#6941B8">04</text>
+        <text x="400" y="449" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8.5" font-weight="700" fill="#6941B8" letter-spacing="1.5">DESIGN &amp; CADRAGE</text>
+        <text x="400" y="463" text-anchor="middle" font-family="Syne,sans-serif" font-size="12" font-weight="700" fill="#1A1916">Convergence &amp; Chiffrage</text>
+
+        <!-- ── Phase 5 — Arbitrage (lower left, blue) ── -->
+        <circle cx="266" cy="318" r="38" fill="#E4F3FA" stroke="#1A88C4" stroke-width="2.5"/>
+        <text x="266" y="325" text-anchor="middle" font-family="Syne,sans-serif" font-size="20" font-weight="800" fill="#1A88C4">05</text>
+        <text x="216" y="304" text-anchor="end" font-family="DM Sans,sans-serif" font-size="8.5" font-weight="700" fill="#1A88C4" letter-spacing="1.5">DELIVERY</text>
+        <text x="216" y="318" text-anchor="end" font-family="Syne,sans-serif" font-size="12" font-weight="700" fill="#1A1916">Arbitrage</text>
+        <text x="216" y="332" text-anchor="end" font-family="DM Sans,sans-serif" font-size="10" fill="#7A7669">&amp; Delivery</text>
+
+        <!-- ── Phase 6 — Livraison (upper left, orange) ── -->
+        <circle cx="266" cy="162" r="38" fill="#FDF0E5" stroke="#C46020" stroke-width="2.5"/>
+        <text x="266" y="169" text-anchor="middle" font-family="Syne,sans-serif" font-size="20" font-weight="800" fill="#C46020">06</text>
+        <text x="216" y="148" text-anchor="end" font-family="DM Sans,sans-serif" font-size="8.5" font-weight="700" fill="#C46020" letter-spacing="1.5">POST-LIVRAISON</text>
+        <text x="216" y="162" text-anchor="end" font-family="Syne,sans-serif" font-size="12" font-weight="700" fill="#1A1916">Livraison</text>
+        <text x="216" y="176" text-anchor="end" font-family="DM Sans,sans-serif" font-size="10" fill="#7A7669">&amp; Suivi</text>
+      </svg>
+    </div>
   </div>
 
   <div class="content">
