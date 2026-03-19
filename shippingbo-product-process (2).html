@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Approche Produit — Shippingbo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F6F2;
+    --surface: #FFFFFF;
+    --surface-2: #F0EEE8;
+    --border: #E2DED4;
+    --text: #1A1916;
+    --text-muted: #7A7669;
+    --accent: #2D5BE3;
+    --accent-light: #EBF0FD;
+    --phase-1: #E8A830;
+    --phase-1-light: #FDF3DC;
+    --phase-2: #4CAF82;
+    --phase-2-light: #E8F7EF;
+    --phase-3: #E05C5C;
+    --phase-3-light: #FDEAEA;
+    --phase-4: #7C5CBF;
+    --phase-4-light: #F0EAFB;
+    --phase-5: #2D9CDB;
+    --phase-5-light: #E8F5FD;
+    --phase-6: #E07B30;
+    --phase-6-light: #FDF0E5;
+    --nav-w: 260px;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .nav {
+    position: fixed; top: 0; left: 0;
+    width: var(--nav-w); height: 100vh;
+    background: var(--text);
+    display: flex; flex-direction: column;
+    z-index: 100; overflow-y: auto;
+  }
+  .nav-logo { padding: 28px 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .nav-logo .label { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 4px; }
+  .nav-logo .title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: #fff; }
+  .nav-section { padding: 20px 16px 0; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.25); }
+  .nav-links { padding: 8px 0 16px; }
+  .nav-link { display: flex; align-items: center; gap: 10px; padding: 8px 20px; font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.6); text-decoration: none; cursor: pointer; transition: all 0.15s; border-left: 2px solid transparent; }
+  .nav-link:hover { color: #fff; background: rgba(255,255,255,0.05); }
+  .nav-link.active { color: #fff; border-left-color: var(--accent); background: rgba(45,91,227,0.12); font-weight: 500; }
+  .nav-link .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .nav-footer { margin-top: auto; padding: 16px 20px; font-size: 11px; color: rgba(255,255,255,0.2); border-top: 1px solid rgba(255,255,255,0.06); }
+
+  .main { margin-left: var(--nav-w); min-height: 100vh; }
+
+  .hero { background: var(--text); padding: 64px 56px 52px; position: relative; overflow: hidden; }
+  .hero::after { content: ''; position: absolute; right: -80px; top: -80px; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(45,91,227,0.15) 0%, transparent 70%); }
+  .hero-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: 48px; font-weight: 800; line-height: 1.1; color: #fff; max-width: 600px; margin-bottom: 20px; }
+  .hero p { font-size: 16px; font-weight: 300; color: rgba(255,255,255,0.55); max-width: 520px; line-height: 1.7; }
+  .hero-stats { display: flex; gap: 32px; margin-top: 40px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .stat-number { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: #fff; }
+  .stat-label { font-size: 12px; color: rgba(255,255,255,0.35); font-weight: 400; margin-top: 2px; }
+
+  .pipeline-section { padding: 40px 56px 24px; }
+  .pipeline-section h2 { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 20px; }
+  .pipeline { display: flex; gap: 0; overflow-x: auto; padding-bottom: 8px; }
+  .pipeline-step { flex: 1; min-width: 120px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--border); border-right: none; cursor: pointer; transition: all 0.2s; }
+  .pipeline-step:first-child { border-radius: var(--radius) 0 0 var(--radius); }
+  .pipeline-step:last-child { border-radius: 0 var(--radius) var(--radius) 0; border-right: 1px solid var(--border); }
+  .pipeline-step:hover { background: var(--accent-light); z-index: 1; }
+  .pipeline-step.active { background: var(--accent); border-color: var(--accent); z-index: 2; }
+  .pipeline-step.active .ps-num { color: rgba(255,255,255,0.6); }
+  .pipeline-step.active .ps-name { color: #fff; }
+  .ps-num { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 4px; }
+  .ps-name { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: var(--text); line-height: 1.3; }
+
+  .content { padding: 0 56px 80px; }
+
+  .phase-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 20px; overflow: hidden; transition: box-shadow 0.2s; }
+  .phase-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+  .phase-header { display: flex; align-items: center; gap: 20px; padding: 24px 28px; cursor: pointer; user-select: none; position: relative; }
+  .phase-header::after { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 4px 0 0 4px; }
+  .phase-number { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 800; flex-shrink: 0; }
+  .phase-meta { flex: 1; }
+  .phase-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 3px; }
+  .phase-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); }
+  .phase-subtitle { font-size: 13px; color: var(--text-muted); margin-top: 3px; font-style: italic; }
+  .phase-toggle { width: 32px; height: 32px; border-radius: 50%; background: var(--surface-2); display: flex; align-items: center; justify-content: center; font-size: 18px; transition: transform 0.25s; flex-shrink: 0; }
+  .phase-card.open .phase-toggle { transform: rotate(180deg); }
+  .phase-body { display: none; padding: 0 28px 28px; border-top: 1px solid var(--border); }
+  .phase-card.open .phase-body { display: block; }
+  .phase-header-right { display: flex; align-items: center; gap: 16px; }
+
+  .section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
+
+  .info-block { background: var(--bg); border-radius: var(--radius); padding: 18px 20px; }
+  .info-block-title { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+  .info-block ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .info-block ul li { font-size: 13.5px; color: var(--text); display: flex; align-items: flex-start; gap: 8px; line-height: 1.45; }
+  .info-block ul li::before { content: '→'; color: var(--text-muted); font-size: 11px; margin-top: 2px; flex-shrink: 0; }
+
+  .tools-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .tool-chip { display: inline-flex; align-items: center; gap: 5px; padding: 5px 12px; border-radius: 100px; font-size: 12px; font-weight: 500; background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+
+  .deliverables-wrap { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .deliv-badge { padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; background: var(--accent-light); color: var(--accent); }
+
+  .step-list { counter-reset: steps; display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+  .step-item { counter-increment: steps; display: flex; gap: 12px; align-items: flex-start; font-size: 13.5px; line-height: 1.5; }
+  .step-item::before { content: counter(steps); width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+
+  .why-box { background: linear-gradient(135deg, var(--accent-light), #fff); border: 1px solid rgba(45,91,227,0.15); border-radius: var(--radius); padding: 18px 20px; margin-top: 16px; }
+  .why-box .why-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .why-box p { font-size: 13.5px; color: var(--text); font-style: italic; line-height: 1.6; }
+
+  .sub-phases { display: flex; gap: 1px; margin-top: 20px; background: var(--border); border-radius: var(--radius); overflow: hidden; }
+  .sub-phase { flex: 1; padding: 12px 10px; background: var(--bg); font-size: 12px; text-align: center; line-height: 1.4; }
+  .sub-phase .sp-icon { font-size: 18px; margin-bottom: 5px; }
+  .sub-phase .sp-label { font-weight: 600; font-size: 11px; }
+  .sub-phase .sp-desc { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+
+  /* FOCUSED table */
+  .focused-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+  .focused-table th { background: var(--surface-2); padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); }
+  .focused-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+  .focused-table tr:last-child td { border-bottom: none; }
+  .focused-table .letter-cell { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800; color: var(--phase-2); white-space: nowrap; }
+  .focused-table .active-row { background: var(--phase-2-light); }
+  .focused-table .inactive-row { opacity: 0.45; }
+  .focused-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; background: var(--phase-2-light); color: var(--phase-2); }
+  .focused-badge.later { background: var(--surface-2); color: var(--text-muted); }
+
+  /* ROI */
+  .roi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .roi-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+  .roi-item .roi-icon { font-size: 18px; margin-bottom: 6px; }
+  .roi-item .roi-label { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .roi-item .roi-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+  /* Rituels */
+  .rituels-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 0; }
+
+  /* Phase colors */
+  .p1 .phase-header::after { background: var(--phase-1); }
+  .p1 .phase-number { background: var(--phase-1-light); color: var(--phase-1); }
+  .p1 .phase-tag { color: var(--phase-1); }
+  .p2 .phase-header::after { background: var(--phase-2); }
+  .p2 .phase-number { background: var(--phase-2-light); color: var(--phase-2); }
+  .p2 .phase-tag { color: var(--phase-2); }
+  .p3 .phase-header::after { background: var(--phase-3); }
+  .p3 .phase-number { background: var(--phase-3-light); color: var(--phase-3); }
+  .p3 .phase-tag { color: var(--phase-3); }
+  .p4 .phase-header::after { background: var(--phase-4); }
+  .p4 .phase-number { background: var(--phase-4-light); color: var(--phase-4); }
+  .p4 .phase-tag { color: var(--phase-4); }
+  .p5 .phase-header::after { background: var(--phase-5); }
+  .p5 .phase-number { background: var(--phase-5-light); color: var(--phase-5); }
+  .p5 .phase-tag { color: var(--phase-5); }
+  .p6 .phase-header::after { background: var(--phase-6); }
+  .p6 .phase-number { background: var(--phase-6-light); color: var(--phase-6); }
+  .p6 .phase-tag { color: var(--phase-6); }
+
+  .legend { padding: 20px 56px 12px; display: flex; gap: 20px; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+  .inputs-strip { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .input-chip { padding: 5px 12px; border-radius: 100px; font-size: 12px; background: var(--phase-1-light); color: var(--phase-1); font-weight: 500; border: 1px solid rgba(232,168,48,0.2); }
+
+  .roles-strip { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .role-badge { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; background: var(--surface-2); color: var(--text-muted); border: 1px solid var(--border); }
+
+  .phase-divider { display: flex; align-items: center; gap: 16px; margin: 28px 0 20px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
+  .phase-divider::before, .phase-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .alert { padding: 14px 18px; border-radius: var(--radius); font-size: 13px; margin-top: 14px; display: flex; gap: 10px; align-items: flex-start; }
+  .alert.warn { background: #FFF8EC; border: 1px solid #FDECC8; color: #7A5C00; }
+  .alert.info { background: var(--accent-light); border: 1px solid rgba(45,91,227,0.15); color: #1C3A9A; }
+  .alert .alert-icon { font-size: 16px; flex-shrink: 0; }
+
+  .top-bar { padding: 16px 56px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .top-bar-title { font-size: 13px; color: var(--text-muted); }
+  .top-bar-actions { display: flex; gap: 8px; }
+  .expand-all-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; transition: all 0.2s; }
+  .expand-all-btn:hover { background: var(--surface-2); }
+
+  @media (max-width: 900px) {
+    :root { --nav-w: 0px; }
+    .nav { display: none; }
+    .hero { padding: 40px 24px; }
+    .hero h1 { font-size: 32px; }
+    .pipeline-section, .legend, .content, .top-bar { padding-left: 20px; padding-right: 20px; }
+    .section-grid, .rituels-grid, .roi-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="label">Shippingbo</div>
+    <div class="title">Approche Produit</div>
+  </div>
+  <div class="nav-section">Phases</div>
+  <div class="nav-links">
+    <a class="nav-link active" onclick="scrollTo('p1')"><span class="dot" style="background:var(--phase-1)"></span> Identification</a>
+    <a class="nav-link" onclick="scrollTo('p2')"><span class="dot" style="background:var(--phase-2)"></span> Qualification</a>
+    <a class="nav-link" onclick="scrollTo('p3')"><span class="dot" style="background:var(--phase-3)"></span> Hypothèses & Vérifications</a>
+    <a class="nav-link" onclick="scrollTo('p4')"><span class="dot" style="background:var(--phase-4)"></span> Convergence & Chiffrage</a>
+    <a class="nav-link" onclick="scrollTo('p5')"><span class="dot" style="background:var(--phase-5)"></span> Arbitrage & Delivery</a>
+    <a class="nav-link" onclick="scrollTo('p6')"><span class="dot" style="background:var(--phase-6)"></span> Livraison & Suivi</a>
+  </div>
+  <div class="nav-footer">v1.1 — Mars 2026</div>
+</nav>
+
+<main class="main">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Référentiel interne</div>
+    <h1>Notre approche produit</h1>
+    <p>De la détection d'une opportunité à son impact mesuré — le cadre de référence pour toute l'équipe Shippingbo.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-number">6</div><div class="stat-label">Phases</div></div>
+      <div class="stat"><div class="stat-number">7</div><div class="stat-label">Étapes FOCUSED</div></div>
+      <div class="stat"><div class="stat-number">∞</div><div class="stat-label">Cycle continu</div></div>
+    </div>
+  </div>
+
+  <div class="top-bar">
+    <span class="top-bar-title">Cliquer sur une phase pour la déplier</span>
+    <div class="top-bar-actions">
+      <button class="expand-all-btn" onclick="expandAll()">↕ Tout déplier</button>
+      <button class="expand-all-btn" onclick="collapseAll()">↑ Tout replier</button>
+    </div>
+  </div>
+
+  <div class="pipeline-section">
+    <h2>Pipeline produit</h2>
+    <div class="pipeline">
+      <div class="pipeline-step active" onclick="scrollTo('p1'); setActive(0)"><div class="ps-num">01</div><div class="ps-name">Identification</div></div>
+      <div class="pipeline-step" onclick="scrollTo('p2'); setActive(1)"><div class="ps-num">02</div><div class="ps-name">Qualification</div></div>
+      <div class="pipeline-step" onclick="scrollTo('p3'); setActive(2)"><div class="ps-num">03</div><div class="ps-name">Hypothèses & Vérif.</div></div>
+      <div class="pipeline-step" onclick="scrollTo('p4'); setActive(3)"><div class="ps-num">04</div><div class="ps-name">Convergence & Chiffrage</div></div>
+      <div class="pipeline-step" onclick="scrollTo('p5'); setActive(4)"><div class="ps-num">05</div><div class="ps-name">Arbitrage & Delivery</div></div>
+      <div class="pipeline-step" onclick="scrollTo('p6'); setActive(5)"><div class="ps-num">06</div><div class="ps-name">Livraison & Suivi</div></div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--phase-1)"></div> Exploration</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--phase-2)"></div> Qualification</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--phase-3)"></div> Recherche & Découverte</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--phase-4)"></div> Design & Cadrage</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--phase-5)"></div> Delivery</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--phase-6)"></div> Post-Livraison</div>
+  </div>
+
+  <div class="content">
+
+    <!-- PHASE 1 -->
+    <div class="phase-card p1 open" id="p1">
+      <div class="phase-header" onclick="toggle(this)">
+        <div class="phase-number">01</div>
+        <div class="phase-meta">
+          <div class="phase-tag">Exploration</div>
+          <div class="phase-title">Identification de l'opportunité</div>
+          <div class="phase-subtitle">Capter les signaux et recenser l'opportunité dans la Roadmap</div>
+        </div>
+        <div class="phase-header-right"><div class="phase-toggle">⌄</div></div>
+      </div>
+      <div class="phase-body">
+        <div class="why-box">
+          <div class="why-label">Pourquoi cette phase ?</div>
+          <p>Toute opportunité produit n'a pas la même valeur. Avant d'investir du temps en qualification, on capte et consolide les signaux — quelle qu'en soit la source — et on les recense formellement dans la Roadmap Jira pour qu'ils entrent dans le pipeline produit.</p>
+        </div>
+
+        <div class="phase-divider">Signaux d'entrée</div>
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:10px">Un sujet peut entrer dans le pipeline via :</div>
+        <div class="inputs-strip">
+          <span class="input-chip">🏦 Feedback Direction</span>
+          <span class="input-chip">📣 Feedback client (RDU)</span>
+          <span class="input-chip">🔄 Feedback interne</span>
+          <span class="input-chip">🌐 Veille concurrentielle</span>
+          <span class="input-chip">📊 Données Pendo</span>
+          <span class="input-chip">💡 Tendance marché / techno</span>
+          <span class="input-chip">🛒 Retour Commerce / Prospects</span>
+          <span class="input-chip">🧰 Dette UX</span>
+        </div>
+
+        <div class="section-grid" style="margin-top:20px">
+          <div class="info-block">
+            <div class="info-block-title">📋 Ce qu'on fait</div>
+            <ul>
+              <li>Collecter les retours clients (RDU) et feedbacks internes</li>
+              <li>Surveiller la concurrence et les tendances marché</li>
+              <li>Identifier les opportunités technologiques émergentes</li>
+              <li>Recenser la dette UX existante</li>
+              <li>Consolider les remontées Commerce / Prospects</li>
+              <li>Recenser l'opportunité dans la roadmap Jira</li>
+            </ul>
+          </div>
+          <div class="info-block">
+            <div class="info-block-title">📦 Livrables</div>
+            <div class="deliverables-wrap">
+              <span class="deliv-badge">Item de Roadmap créé</span>
+            </div>
+            <div style="margin-top:16px">
+              <div class="info-block-title">✅ Critères de sortie</div>
+              <ul>
+                <li>Le sujet est identifié et nommé</li>
+                <li>L'opportunité est enregistrée dans la Roadmap Jira</li>
+                <li>Une première intuition sur sa valeur est posée</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="phase-divider">Outils</div>
+        <div class="tools-wrap">
+          <span class="tool-chip">📊 Pendo (comportements utilisateurs)</span>
+          <span class="tool-chip">📋 Jira (recensement roadmap + RDU)</span>
+        </div>
+
+        <div class="phase-divider">Rôles impliqués</div>
+        <div class="roles-strip">
+          <span class="role-badge">Head of Product</span>
+          <span class="role-badge">PM</span>
+          <span class="role-badge">Commerce</span>
+          <span class="role-badge">Direction</span>
+          <span class="role-badge">Customer Success</span>
+          <span class="role-badge">Support</span>
+          <span class="role-badge">Marketing</span>
+          <span class="role-badge">Design</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="phase-card p2" id="p2">
+      <div class="phase-header" onclick="toggle(this)">
+        <div class="phase-number">02</div>
+        <div class="phase-meta">
+          <div class="phase-tag">Qualification</div>
+          <div class="phase-title">Qualification de l'opportunité</div>
+          <div class="phase-subtitle">Activer F, O, C du FOCUSED et scorer avec RICE</div>
+        </div>
+        <div class="phase-header-right"><div class="phase-toggle">⌄</div></div>
+      </div>
+      <div class="phase-body">
+        <div class="why-box">
+          <div class="why-label">Pourquoi cette phase ?</div>
+          <p>On qualifie avant de découvrir pour ne pas investir du temps de recherche sur des opportunités faiblement valorisées. Les trois premières étapes du FOCUSED (F, O, C) et le score RICE permettent de comparer les sujets objectivement et d'aligner l'équipe.</p>
+        </div>
+
+        <div class="sub-phases">
+          <div class="sub-phase"><div class="sp-icon">📋</div><div class="sp-label">Compiler les RDUs</div><div class="sp-desc">Agrégation données</div></div>
+          <div class="sub-phase"><div class="sp-icon">🔍</div><div class="sp-label">Explorer Pendo</div><div class="sp-desc">Usage réel</div></div>
+          <div class="sub-phase"><div class="sp-icon">🛰</div><div class="sp-label">F — Frame</div><div class="sp-desc">Project Ambition</div></div>
+          <div class="sub-phase"><div class="sp-icon">🔬</div><div class="sp-label">O — Observe</div><div class="sp-desc">First Use Case</div></div>
+          <div class="sub-phase"><div class="sp-icon">🎣</div><div class="sp-label">C — Claim</div><div class="sp-desc">Launch Tweet</div></div>
+          <div class="sub-phase"><div class="sp-icon">🏆</div><div class="sp-label">Score RICE</div><div class="sp-desc">Priorisation</div></div>
+        </div>
+
+        <div class="phase-divider">Framework FOCUSED — étapes activées à cette phase</div>
+        <div class="info-block" style="margin-top:0; padding:0; overflow:hidden">
+          <table class="focused-table">
+            <thead>
+              <tr>
+                <th>Étape</th>
+                <th>Description</th>
+                <th>Livrable</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="active-row">
+                <td class="letter-cell">🛰 F — Frame</td>
+                <td>Cadrer le projet : impact attendu, risques, efforts</td>
+                <td><strong>Project Ambition</strong></td>
+                <td><span class="focused-badge">Activé</span></td>
+              </tr>
+              <tr class="active-row">
+                <td class="letter-cell">🔬 O — Observe</td>
+                <td>Définir et qualifier le cas d'usage nominal</td>
+                <td><strong>First Use Case</strong></td>
+                <td><span class="focused-badge">Activé</span></td>
+              </tr>
+              <tr class="active-row">
+                <td class="letter-cell">🎣 C — Claim</td>
+                <td>Clarifier la promesse faite aux early adopters en 250 caractères</td>
+                <td><strong>Launch Tweet</strong></td>
+                <td><span class="focused-badge">Activé</span></td>
+              </tr>
+              <tr class="inactive-row">
+                <td class="letter-cell">🥁 U — Unfold</td>
+                <td>Identifier les moments clés du parcours utilisateur</td>
+                <td>5 Touchpoints</td>
+                <td><span class="focused-badge later">Phase 3</span></td>
+              </tr>
+              <tr class="inactive-row">
+                <td class="letter-cell">💎 S — Steal</td>
+                <td>S'inspirer de solutions existantes dans d'autres industries</td>
+                <td>Benchmark</td>
+                <td><span class="focused-badge later">Phase 3</span></td>
+              </tr>
+              <tr class="inactive-row">
+                <td class="letter-cell">⚙️ E — Execute</td>
+                <td>Prototyper et valider les hypothèses par l'itération</td>
+                <td>Prototype itératif</td>
+                <td><span class="focused-badge later">Phase 3-4</span></td>
+              </tr>
+              <tr class="inactive-row">
+                <td class="letter-cell">⚖️ D — Decide</td>
+                <td>Arbitrage et décision go / no-go</td>
+                <td>Décision roadmap</td>
+                <td><span class="focused-badge later">Phase 5</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="section-grid" style="margin-top:16px">
+          <div class="info-block">
+            <div class="info-block-title">🏆 Score RICE</div>
+            <ul>
+              <li><strong>R — Reach :</strong> combien d'utilisateurs sont concernés ?</li>
+              <li><strong>I — Impact :</strong> impact potentiel sur leur expérience ?</li>
+              <li><strong>C — Confidence :</strong> niveau de certitude ?</li>
+              <li><strong>E — Effort :</strong> temps pour le réaliser ?</li>
+            </ul>
+            <div style="margin-top:12px; padding:10px 14px; background:var(--surface); border-radius:8px; font-size:13px; font-weight:600; text-align:center; border:1px solid var(--border);">Score = (R × I × C) / E</div>
+          </div>
+          <div class="info-block">
+            <div class="info-block-title">📦 Livrables</div>
+            <div class="deliverables-wrap">
+              <span class="deliv-badge">Project Ambition</span>
+              <span class="deliv-badge">First Use Case</span>
+              <span class="deliv-badge">Launch Tweet</span>
+              <span class="deliv-badge">Score RICE</span>
+            </div>
+            <div style="margin-top:16px">
+              <div class="info-block-title">✅ Critères de sortie</div>
+              <ul>
+                <li>F, O, C du FOCUSED complétés</li>
+                <li>Score RICE calculé et comparé</li>
+                <li>Décision : go discovery / backlog / abandon</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert warn">
+          <span class="alert-icon">⚠️</span>
+          <div><strong>Piège courant :</strong> Sauter aux hypothèses de solution sans avoir complété le Frame. Le symptôme : un brief qui parle de fonctionnalités plutôt que de problèmes.</div>
+        </div>
+
+        <div class="phase-divider">Outils</div>
+        <div class="tools-wrap">
+          <span class="tool-chip">🛰 FOCUSED (F, O, C)</span>
+          <span class="tool-chip">📊 Pendo</span>
+          <span class="tool-chip">📋 Jira (roadmap)</span>
+          <span class="tool-chip">📁 Google Drive</span>
+        </div>
+
+        <div class="phase-divider">Rôles impliqués</div>
+        <div class="roles-strip">
+          <span class="role-badge">Head of Product</span>
+          <span class="role-badge">PM</span>
+          <span class="role-badge">Design</span>
+          <span class="role-badge">Clients (internes & externes)</span>
+          <span class="role-badge">Experts métiers</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div class="phase-card p3" id="p3">
+      <div class="phase-header" onclick="toggle(this)">
+        <div class="phase-number">03</div>
+        <div class="phase-meta">
+          <div class="phase-tag">Recherche & Découverte</div>
+          <div class="phase-title">Hypothèses & Vérifications</div>
+          <div class="phase-subtitle">Prototyper, tester, itérer et apprendre avant de designer</div>
+        </div>
+        <div class="phase-header-right"><div class="phase-toggle">⌄</div></div>
+      </div>
+      <div class="phase-body">
+        <div class="why-box">
+          <div class="why-label">Pourquoi cette phase ?</div>
+          <p>C'est ici qu'on réduit l'incertitude. On ne construit pas ce qu'on croit vrai , on prototype, on teste, on observe les réactions réelles, et on itère le prototype à chaque round de test. La solution émerge progressivement de ces allers-retours continus.</p>
+        </div>
+
+        <div class="sub-phases">
+          <div class="sub-phase"><div class="sp-icon">💬</div><div class="sp-label">Consultation experts</div><div class="sp-desc">Contexte métier</div></div>
+          <div class="sub-phase"><div class="sp-icon">🎨</div><div class="sp-label">Exploration UX</div><div class="sp-desc">Premières pistes</div></div>
+          <div class="sub-phase"><div class="sp-icon">🧪</div><div class="sp-label">Prototypage</div><div class="sp-desc">Matérialiser</div></div>
+          <div class="sub-phase"><div class="sp-icon">🔁</div><div class="sp-label">Itérations</div><div class="sp-desc">Affiner à chaque test</div></div>
+          <div class="sub-phase"><div class="sp-icon">⚙️</div><div class="sp-label">Faisabilité tech</div><div class="sp-desc">Contraintes réelles</div></div>
+          <div class="sub-phase"><div class="sp-icon">✅</div><div class="sp-label">Happy path validé</div><div class="sp-desc">Alignement</div></div>
+        </div>
+
+        <div class="section-grid" style="margin-top:20px">
+          <div class="info-block">
+            <div class="info-block-title">🧪 Prototypage & tests itératifs</div>
+            <div class="step-list">
+              <div class="step-item">Définir les hypothèses à tester (jobs-to-be-done, points de friction)</div>
+              <div class="step-item">Rédiger le protocole de recherche (guide d'entretien, critères)</div>
+              <div class="step-item">Construire un premier prototype basse fidélité (Figma)</div>
+              <div class="step-item">Conduire les sessions de test avec les utilisateurs</div>
+              <div class="step-item">Analyser les résultats et <strong>ajuster le prototype</strong> en conséquence</div>
+              <div class="step-item">Itérer autant que nécessaire jusqu'à validation du "happy path"</div>
+            </div>
+          </div>
+          <div class="info-block">
+            <div class="info-block-title">🛰 FOCUSED — étapes activées</div>
+            <ul>
+              <li><strong>U — Unfold 🥁 :</strong> identifier les 5 Touchpoints clés du parcours</li>
+              <li><strong>S — Steal 💎 :</strong> s'inspirer de solutions dans d'autres industries</li>
+              <li><strong>E — Execute ⚙️ :</strong> prototyper et valider par l'itération</li>
+            </ul>
+            <div style="margin-top:16px">
+              <div class="info-block-title">📦 Livrables</div>
+              <div class="deliverables-wrap">
+                <span class="deliv-badge">Protocole de recherche</span>
+                <span class="deliv-badge">Synthèse des insights</span>
+                <span class="deliv-badge">5 Touchpoints</span>
+                <span class="deliv-badge">Prototype itératif validé</span>
+                <span class="deliv-badge">Hypothèses tranchées</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert warn">
+          <span class="alert-icon">⚠️</span>
+          <div><strong>Important :</strong> Le prototype évolue à chaque round de test , ce n'est pas un processus linéaire. L'objectif n'est pas de finaliser le design ici, mais de valider la direction avant d'y investir davantage.</div>
+        </div>
+
+        <div class="phase-divider">Outils</div>
+        <div class="tools-wrap">
+          <span class="tool-chip">🎨 Figma (prototypage itératif)</span>
+          <span class="tool-chip">👥 Tests utilisateurs</span>
+          <span class="tool-chip">📊 Pendo</span>
+          <span class="tool-chip">📁 Google Docs (protocole)</span>
+          <span class="tool-chip">📧 Gmail / Google Meet</span>
+        </div>
+
+        <div class="phase-divider">Rôles impliqués</div>
+        <div class="roles-strip">
+          <span class="role-badge">PM / Head of Product</span>
+          <span class="role-badge">Designer UX</span>
+          <span class="role-badge">Experts fonctionnels</span>
+          <span class="role-badge">Tech Lead (faisabilité)</span>
+          <span class="role-badge">Clients (internes & externes)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 4 -->
+    <div class="phase-card p4" id="p4">
+      <div class="phase-header" onclick="toggle(this)">
+        <div class="phase-number">04</div>
+        <div class="phase-meta">
+          <div class="phase-tag">Design & Cadrage</div>
+          <div class="phase-title">Convergence vers une solution & Chiffrage</div>
+          <div class="phase-subtitle">Consolider la direction, chiffrer l'effort, estimer le ROI</div>
+        </div>
+        <div class="phase-header-right"><div class="phase-toggle">⌄</div></div>
+      </div>
+      <div class="phase-body">
+        <div class="why-box">
+          <div class="why-label">Pourquoi cette phase ?</div>
+          <p>On consolide les apprentissages en une direction de solution cohérente. Le design n'est pas encore final, c'est une direction validée. Le chiffrage et l'estimation du ROI permettent de comparer coût de développement et valeur attendue, pour préparer l'arbitrage trimestriel.</p>
+        </div>
+
+        <div class="sub-phases">
+          <div class="sub-phase"><div class="sp-icon">🗺</div><div class="sp-label">Story Mapping</div><div class="sp-desc">Vision fonctionnelle</div></div>
+          <div class="sub-phase"><div class="sp-icon">🎨</div><div class="sp-label">Design (direction)</div><div class="sp-desc">Pas encore final</div></div>
+          <div class="sub-phase"><div class="sp-icon">💰</div><div class="sp-label">Chiffrage</div><div class="sp-desc">Estimation effort</div></div>
+          <div class="sub-phase"><div class="sp-icon">📈</div><div class="sp-label">ROI estimé</div><div class="sp-desc">Valeur vs coût</div></div>
+        </div>
+
+        <div class="section-grid" style="margin-top:20px">
+          <div class="info-block">
+            <div class="info-block-title">🗺 Story Mapping</div>
+            <div class="step-list">
+              <div class="step-item">Lister les activités utilisateur principales (backbone)</div>
+              <div class="step-item">Décomposer chaque activité en tâches utilisateur</div>
+              <div class="step-item">Prioriser et identifier MVP vs évolutions futures</div>
+              <div class="step-item">Donner une vision du périmètre fonctionnel global</div>
+            </div>
+          </div>
+          <div class="info-block">
+            <div class="info-block-title">💰 Chiffrage</div>
+            <div class="step-list">
+              <div class="step-item">Estimer l'effort de développement (jours-homme ou points)</div>
+              <div class="step-item">Identifier les zones d'incertitude technique</div>
+              <div class="step-item">Produire une estimation haute / basse</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="phase-divider">Mesure du ROI</div>
+        <div class="info-block" style="margin-top:0">
+          <div class="info-block-title">📈 Comparer le coût du développement à la valeur attendue</div>
+          <div class="roi-grid">
+            <div class="roi-item">
+              <div class="roi-icon">💶</div>
+              <div class="roi-label">Valeur financière</div>
+              <div class="roi-desc">Revenus générés, nouvelles opportunités de monétisation, rentabilité estimée</div>
+            </div>
+            <div class="roi-item">
+              <div class="roi-icon">✨</div>
+              <div class="roi-label">Expérience utilisateur</div>
+              <div class="roi-desc">Amélioration satisfaction, réduction des frictions, valeur perçue</div>
+            </div>
+            <div class="roi-item">
+              <div class="roi-icon">⚙️</div>
+              <div class="roi-label">Efficacité interne</div>
+              <div class="roi-desc">Réduction des coûts opérationnels, gain de temps équipes internes</div>
+            </div>
+            <div class="roi-item">
+              <div class="roi-icon">🏆</div>
+              <div class="roi-label">Avantage concurrentiel</div>
+              <div class="roi-desc">Différenciation marché, rétention clients, attractivité prospects</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-grid" style="margin-top:16px">
+          <div class="info-block">
+            <div class="info-block-title">🎨 Design (direction en cours)</div>
+            <ul>
+              <li>Consolidation de la direction UX issue des itérations (Phase 3)</li>
+              <li>Design en cours, <strong>pas encore le design final livrable</strong></li>
+              <li>Spécification des composants principaux</li>
+              <li>Identification des cas limites (erreurs, états vides…)</li>
+            </ul>
+          </div>
+          <div class="info-block">
+            <div class="info-block-title">📦 Livrables</div>
+            <div class="deliverables-wrap">
+              <span class="deliv-badge">Story mapping</span>
+              <span class="deliv-badge">Chiffrage (haute/basse)</span>
+              <span class="deliv-badge">ROI estimé</span>
+              <span class="deliv-badge">Design (direction validée)</span>
+            </div>
+            <div style="margin-top:16px">
+              <div class="info-block-title">✅ Critères de sortie</div>
+              <ul>
+                <li>Story mapping validé PM + Tech Lead</li>
+                <li>Chiffrage partagé et accepté</li>
+                <li>ROI estimé et documenté</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert info">
+          <span class="alert-icon">💡</span>
+          <div>Le lotissement en lots de développement et la feuille de route détaillée sont définis <strong>après l'arbitrage trimestriel</strong>, en Phase 5, pas ici.</div>
+        </div>
+
+        <div class="phase-divider">Outils</div>
+        <div class="tools-wrap">
+          <span class="tool-chip">🗺 Miro (story mapping)</span>
+          <span class="tool-chip">🎨 Figma (design)</span>
+          <span class="tool-chip">🛰 FOCUSED (mise à jour)</span>
+          <span class="tool-chip">📊 Google Sheets (chiffrage / ROI)</span>
+        </div>
+
+        <div class="phase-divider">Rôles impliqués</div>
+        <div class="roles-strip">
+          <span class="role-badge">PM / Head of Product</span>
+          <span class="role-badge">Designer UX/UI</span>
+          <span class="role-badge">Tech Lead</span>
+          <span class="role-badge">Marketing</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 5 -->
+    <div class="phase-card p5" id="p5">
+      <div class="phase-header" onclick="toggle(this)">
+        <div class="phase-number">05</div>
+        <div class="phase-meta">
+          <div class="phase-tag">Delivery</div>
+          <div class="phase-title">Arbitrage Roadmap & Lancement du Delivery</div>
+          <div class="phase-subtitle">Comité trimestriel, puis structuration et lancement</div>
+        </div>
+        <div class="phase-header-right"><div class="phase-toggle">⌄</div></div>
+      </div>
+      <div class="phase-body">
+        <div class="why-box">
+          <div class="why-label">Pourquoi cette phase ?</div>
+          <p>L'arbitrage roadmap se tient chaque trimestre : on tranche quels sujets entrent dans le cycle suivant, avec quel périmètre. Une fois arbitré, le lancement du delivery structure tout le travail: lotissement, Jira, kick-off, rituels, spec technique.</p>
+        </div>
+
+        <div class="sub-phases">
+          <div class="sub-phase"><div class="sp-icon">⚖️</div><div class="sp-label">Comité arbitrage</div><div class="sp-desc">Trimestriel</div></div>
+          <div class="sub-phase"><div class="sp-icon">🗺</div><div class="sp-label">Feuille de route</div><div class="sp-desc">Lots définis</div></div>
+          <div class="sub-phase"><div class="sp-icon">🚀</div><div class="sp-label">Kick-off</div><div class="sp-desc">Alignement équipe</div></div>
+          <div class="sub-phase"><div class="sp-icon">🎯</div><div class="sp-label">Jira</div><div class="sp-desc">Tâches créées</div></div>
+          <div class="sub-phase"><div class="sp-icon">⚙️</div><div class="sp-label">Spec technique</div><div class="sp-desc">Découpage fin</div></div>
+        </div>
+
+        <div class="section-grid" style="margin-top:20px">
+          <div class="info-block">
+            <div class="info-block-title">⚖️ Comité d'arbitrage trimestriel</div>
+            <ul>
+              <li>Fréquence : <strong>chaque trimestre</strong>, pour valider les sujets du cycle suivant</li>
+              <li>Comparaison des sujets en attente (RICE, ROI estimé, valeur stratégique)</li>
+              <li>Décision : quel(s) sujet(s) démarre(nt), avec quel périmètre</li>
+              <li>Présentation interne de la roadmap arbitrée</li>
+              <li>FOCUSED — D (Decide) : go / no-go / report</li>
+            </ul>
+          </div>
+          <div class="info-block">
+            <div class="info-block-title">🚀 Lancement delivery</div>
+            <div class="step-list">
+              <div class="step-item">Définition des lots de livraison (feuille de route détaillée)</div>
+              <div class="step-item">Kick-off avec l'équipe de développement</div>
+              <div class="step-item">Création des tâches Jira (épics, stories, tasks)</div>
+              <div class="step-item">Mise en place des rituels</div>
+              <div class="step-item">Spec et découpage technique avec les devs</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="phase-divider">Rituels delivery</div>
+        <div class="rituels-grid" style="grid-template-columns: 1fr 1fr;">
+          <div class="info-block">
+            <div class="info-block-title">📅 Daily</div>
+            <ul>
+              <li>Synchronisation rapide de l'équipe</li>
+              <li>Identification des blocages</li>
+              <li>Fréquence : quotidienne</li>
+            </ul>
+          </div>
+          <div class="info-block">
+            <div class="info-block-title">🎬 Démo du lundi</div>
+            <ul>
+              <li>Avec toutes les équipes <strong>customer-facing</strong></li>
+              <li>Présentation en live de tout ce qui a été livré dans la semaine écoulée</li>
+              <li>Fréquence : hebdomadaire</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section-grid" style="margin-top:16px">
+          <div class="info-block">
+            <div class="info-block-title">📦 Livrables</div>
+            <div class="deliverables-wrap">
+              <span class="deliv-badge">Roadmap trimestrielle arbitrée</span>
+              <span class="deliv-badge">Feuille de route (lots)</span>
+              <span class="deliv-badge">Board Jira structuré</span>
+              <span class="deliv-badge">Spec technique validée</span>
+              <span class="deliv-badge">Rituels en place</span>
+            </div>
+          </div>
+          <div class="info-block">
+            <div class="info-block-title">✅ Critères de sortie</div>
+            <ul>
+              <li>Arbitrage trimestriel acté et communiqué</li>
+              <li>Feuille de route et lots définis</li>
+              <li>Kick-off réalisé avec l'équipe</li>
+              <li>Jira alimenté et rituels planifiés</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="phase-divider">Outils</div>
+        <div class="tools-wrap">
+          <span class="tool-chip">⚖️ FOCUSED (D — Decide)</span>
+          <span class="tool-chip">📋 Jira (delivery)</span>
+          <span class="tool-chip">📊 Google Slides (présentation arbitrage)</span>
+          <span class="tool-chip">📊 Google Sheets (roadmap)</span>
+        </div>
+
+        <div class="phase-divider">Rôles impliqués</div>
+        <div class="roles-strip">
+          <span class="role-badge">Head of Product</span>
+          <span class="role-badge">PM</span>
+          <span class="role-badge">Direction</span>
+          <span class="role-badge">Tech Lead</span>
+          <span class="role-badge">Développeurs</span>
+          <span class="role-badge">Designer</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 6 -->
+    <div class="phase-card p6" id="p6">
+      <div class="phase-header" onclick="toggle(this)">
+        <div class="phase-number">06</div>
+        <div class="phase-meta">
+          <div class="phase-tag">Post-Livraison</div>
+          <div class="phase-title">Livraison & Suivi Post-Livraison</div>
+          <div class="phase-subtitle">Livrer n'est pas la fin, c'est le début de la mesure</div>
+        </div>
+        <div class="phase-header-right"><div class="phase-toggle">⌄</div></div>
+      </div>
+      <div class="phase-body">
+        <div class="why-box">
+          <div class="why-label">Pourquoi cette phase ?</div>
+          <p>Une feature livrée sans suivi est une opportunité d'apprentissage gâchée. On mesure l'adoption, on compare les revenus aux estimations ROI de la Phase 4, on évalue l'impact sur la cible FOCUSED, et on boucle sur les RDUs pour alimenter le cycle suivant.</p>
+        </div>
+
+        <div class="sub-phases">
+          <div class="sub-phase"><div class="sp-icon">✅</div><div class="sp-label">Valider en prod</div><div class="sp-desc">Recette finale</div></div>
+          <div class="sub-phase"><div class="sp-icon">🚢</div><div class="sp-label">Livraison</div><div class="sp-desc">Full ou beta</div></div>
+          <div class="sub-phase"><div class="sp-icon">📣</div><div class="sp-label">Communication</div><div class="sp-desc">Changelog + externe</div></div>
+          <div class="sub-phase"><div class="sp-icon">📈</div><div class="sp-label">Adoption</div><div class="sp-desc">Pendo + RDU</div></div>
+          <div class="sub-phase"><div class="sp-icon">💶</div><div class="sp-label">Suivi économique</div><div class="sp-desc">Revenus vs estimations</div></div>
+          <div class="sub-phase"><div class="sp-icon">🎯</div><div class="sp-label">Impact cible</div><div class="sp-desc">Frame FOCUSED</div></div>
+        </div>
+
+        <div class="phase-divider">Clôture officielle</div>
+        <div class="rituels-grid" style="grid-template-columns: 1fr;">
+          <div class="info-block">
+            <div class="info-block-title">🎭 Démo du mardi</div>
+            <ul>
+              <li>Rituel à l'échelle de <strong>toute l'entreprise</strong></li>
+              <li>Démonstration globale pour présenter officiellement le sujet livré à tous les collaborateurs</li>
+              <li>Marque la clôture formelle d'un sujet et le passage en phase de suivi</li>
+              <li>Fréquence : à chaque fin de sujet livré</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section-grid" style="margin-top:20px">
+          <div class="info-block">
+            <div class="info-block-title">🚀 Livraison</div>
+            <ul>
+              <li>Validation dev en production (recette finale)</li>
+              <li>Option Beta : livraison restreinte à un panel avant généralisation</li>
+              <li>Collecte des retours beta et ajustements si nécessaire</li>
+              <li>Documentation technique et fonctionnelle (Google Docs)</li>
+              <li>Communication interne via le Changelog</li>
+              <li>Communication externe (clients)</li>
+            </ul>
+          </div>
+          <div class="info-block">
+            <div class="info-block-title">📊 Suivi post-livraison</div>
+            <div class="step-list">
+              <div class="step-item">Mesurer l'adoption dans Pendo (activation, rétention, usage)</div>
+              <div class="step-item">Collecter les retours utilisateurs (enquête satisfaction)</div>
+              <div class="step-item">Suivi économique : comparer les revenus aux estimations ROI de la Phase 4 <em>(si applicable)</em></div>
+              <div class="step-item">Mesurer l'impact sur la cible définie dans le FOCUSED</div>
+              <div class="step-item">Alimenter le RDU avec les nouveaux feedbacks</div>
+              <div class="step-item">Itérer sur le design si les retours utilisateurs le justifient</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-grid" style="margin-top:16px">
+          <div class="info-block">
+            <div class="info-block-title">📦 Livrables</div>
+            <div class="deliverables-wrap">
+              <span class="deliv-badge">Changelog</span>
+              <span class="deliv-badge">Documentation</span>
+              <span class="deliv-badge">Rapport adoption Pendo</span>
+              <span class="deliv-badge">Enquête satisfaction</span>
+              <span class="deliv-badge">Suivi économique vs ROI estimé</span>
+              <span class="deliv-badge">Impact vs cible FOCUSED</span>
+            </div>
+          </div>
+          <div class="info-block">
+            <div class="info-block-title">🔄 Boucle de retour → Phase 1</div>
+            <ul>
+              <li>Les RDUs issus de la livraison alimentent de nouvelles opportunités</li>
+              <li>L'impact mesuré affine le score RICE des prochaines itérations</li>
+              <li>Les retours design permettent d'itérer rapidement si besoin</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="alert info">
+          <span class="alert-icon">🔁</span>
+          <div><strong>Cycle continu :</strong> Chaque livraison génère des apprentissages (adoption, économique, UX) qui informent directement les prochaines opportunités.</div>
+        </div>
+
+        <div class="phase-divider">Outils</div>
+        <div class="tools-wrap">
+          <span class="tool-chip">📊 Pendo (adoption & analytics)</span>
+          <span class="tool-chip">📋 Jira (clôture tâches)</span>
+          <span class="tool-chip">📣 Changelog</span>
+          <span class="tool-chip">📁 Google Docs (documentation)</span>
+          <span class="tool-chip">📊 Google Sheets (suivi économique)</span>
+          <span class="tool-chip">🎯 FOCUSED (mesure impact)</span>
+        </div>
+
+        <div class="phase-divider">Rôles impliqués</div>
+        <div class="roles-strip">
+          <span class="role-badge">PM / Head of Product</span>
+          <span class="role-badge">Développeurs</span>
+          <span class="role-badge">Design</span>
+          <span class="role-badge">Customer Success</span>
+          <span class="role-badge">Marketing</span>
+          <span class="role-badge">Managers</span>
+          <span class="role-badge">Direction</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  function toggle(header) {
+    header.closest('.phase-card').classList.toggle('open');
+    updateNav();
+  }
+  function expandAll() { document.querySelectorAll('.phase-card').forEach(c => c.classList.add('open')); }
+  function collapseAll() { document.querySelectorAll('.phase-card').forEach(c => c.classList.remove('open')); }
+  function scrollTo(id) {
+    const el = document.getElementById(id);
+    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.add('open'); }
+    updateNav();
+  }
+  function setActive(idx) {
+    document.querySelectorAll('.pipeline-step').forEach((s, i) => s.classList.toggle('active', i === idx));
+  }
+  function updateNav() {
+    const phases = ['p1','p2','p3','p4','p5','p6'];
+    const links = document.querySelectorAll('.nav-link');
+    let current = 0;
+    phases.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < 200) current = i;
+    });
+    links.forEach((l, i) => l.classList.toggle('active', i === current));
+    setActive(current);
+  }
+  window.addEventListener('scroll', updateNav);
+</script>
+</body>
+</html>
